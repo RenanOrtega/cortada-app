@@ -124,9 +124,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     curve: Curves.easeInOut,
                   );
                 },
+                style: TextButton.styleFrom(backgroundColor: Colors.black),
                 child: const Text(
                   'Anterior',
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.white),
                 ),
               )
             else
@@ -142,9 +143,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   Navigator.pushReplacementNamed(context, '/home');
                 }
               },
+              style: TextButton.styleFrom(backgroundColor: Colors.black),
               child: Text(
                 _currentPage < _pages.length - 1 ? 'Próximo' : 'Começar',
-                style: const TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
           ],

@@ -17,6 +17,7 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<void> _navigateToOnboarding() async {
     await Future.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
 
     Navigator.pushReplacement(
       context,
