@@ -1,10 +1,39 @@
+import 'package:cortada_app/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:cortada_app/services/auth/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   LoginPage({super.key});
+
+  Future<void> _handleGoogleSignIn(BuildContext context) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    try {
+      final UserCredential? userCredential =
+          await _authService.signInWithGoogle();
+
+      if (!context.mounted) return;
+
+      if (userCredential != null) {
+        navigator.pushReplacement(
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => OnboardingPage(),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Erro ao fazer login: ${e.toString()}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +96,7 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   OutlinedButton(
-                    onPressed: () => AuthService().signInWithGoogle(),
+                    onPressed: () => _handleGoogleSignIn(context),
                     style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,

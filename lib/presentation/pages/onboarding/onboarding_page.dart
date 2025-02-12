@@ -1,3 +1,4 @@
+import 'package:cortada_app/presentation/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -155,7 +156,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     curve: Curves.easeInOut,
                   );
                 } else {
-                  Navigator.pushReplacementNamed(context, '/home');
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) => ProfilePage(),
+                    ),
+                  );
                 }
               },
               style: TextButton.styleFrom(backgroundColor: Colors.black),
