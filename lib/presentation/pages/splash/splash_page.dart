@@ -1,4 +1,5 @@
-import 'package:cortada_app/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:cortada_app/presentation/pages/auth/login_page.dart';
+// import 'package:cortada_app/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:flutter/material.dart';
 
 class SplashPage extends StatefulWidget {
@@ -22,7 +23,7 @@ class _SplashPageState extends State<SplashPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute<void>(
-        builder: (BuildContext context) => const OnboardingPage(),
+        builder: (BuildContext context) => LoginPage(),
       ),
     );
   }

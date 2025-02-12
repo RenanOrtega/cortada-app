@@ -18,12 +18,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
       image: 'assets/images/onboarding.png',
     ),
     OnboardingItem(
-      title: 'Crie partidas com seus amigos',
+      title: 'Crie partidas com seus amigos',
       description: 'Toma que toma toma',
       image: 'assets/images/onboarding.png',
     ),
     OnboardingItem(
-      title: 'Rankings mensais e  cosméticos maneiros',
+      title: 'Rankings mensais e cosméticos maneiros',
       description: 'Toma que toma toma',
       image: 'assets/images/onboarding.png',
     ),
