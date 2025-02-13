@@ -1,5 +1,6 @@
-import 'package:cortada_app/presentation/pages/auth/login_page.dart';
+import 'package:cortada_app/router/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -12,19 +13,14 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    _navigateToLogin();
+    _navigateToNextPage();
   }
 
-  Future<void> _navigateToLogin() async {
+  Future<void> _navigateToNextPage() async {
     await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => LoginPage(),
-      ),
-    );
+    context.go(AppRoutes.login);
   }
 
   @override

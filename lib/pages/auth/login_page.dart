@@ -1,7 +1,8 @@
-import 'package:cortada_app/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:cortada_app/router/routes.dart';
 import 'package:cortada_app/services/auth/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
@@ -11,7 +12,6 @@ class LoginPage extends StatelessWidget {
 
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
 
     try {
       final UserCredential? userCredential =
@@ -20,11 +20,7 @@ class LoginPage extends StatelessWidget {
       if (!context.mounted) return;
 
       if (userCredential != null) {
-        navigator.pushReplacement(
-          MaterialPageRoute<void>(
-            builder: (BuildContext context) => OnboardingPage(),
-          ),
-        );
+        context.go(AppRoutes.onboarding);
       }
     } catch (e) {
       if (!context.mounted) return;

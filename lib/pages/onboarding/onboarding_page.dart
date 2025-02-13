@@ -1,5 +1,6 @@
-import 'package:cortada_app/presentation/pages/profile/profile_page.dart';
+import 'package:cortada_app/router/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -156,12 +157,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     curve: Curves.easeInOut,
                   );
                 } else {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (BuildContext context) => ProfilePage(),
-                    ),
-                  );
+                  context.go(AppRoutes.profile);
                 }
               },
               style: TextButton.styleFrom(backgroundColor: Colors.black),
