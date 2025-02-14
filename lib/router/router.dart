@@ -26,6 +26,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (isAuth && isGoingToLogin) return AppRoutes.onboarding;
 
+      if (isAuth && !isGoingToLogin) return AppRoutes.profile;
+
       return null;
     },
     initialLocation: AppRoutes.splash,
