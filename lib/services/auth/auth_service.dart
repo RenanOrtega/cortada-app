@@ -116,7 +116,7 @@ class AuthService {
     }
   }
 
-  Future<UserCredential> verifySMSCode({
+  Future<UserCredential?> verifySMSCode({
     required String smsCode,
     required String verificationId,
   }) async {

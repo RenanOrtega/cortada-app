@@ -1,33 +1,137 @@
+import 'package:cortada_app/providers/api_provider.dart';
+import 'package:cortada_app/providers/auth_provider.dart';
 import 'package:cortada_app/router/routes.dart';
-import 'package:cortada_app/services/auth/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginPage extends StatelessWidget {
-  final TextEditingController phoneController = TextEditingController();
-  final AuthService _authService = AuthService();
-
+class LoginPage extends ConsumerStatefulWidget {
   LoginPage({super.key});
 
-  Future<void> _handleGoogleSignIn(BuildContext context) async {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
+  @override
+  ConsumerState<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends ConsumerState<LoginPage> {
+  final TextEditingController phoneController = TextEditingController();
+  String? _verificationId;
+  bool _isLoading = false;
+
+  Future<void> _updateUserProfile() async {
+    try {
+      final apiService = ref.read(apiServiceProvider);
+      await apiService.updateUserProfile();
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao atualizar perfil: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    if (_isLoading) return;
+
+    setState(() => _isLoading = true);
 
     try {
+      final authService = ref.read(authServiceProvider);
       final UserCredential? userCredential =
-          await _authService.signInWithGoogle();
+          await authService.signInWithGoogle();
 
       if (!context.mounted) return;
 
       if (userCredential != null) {
+        await _updateUserProfile();
         context.go(AppRoutes.onboarding);
       }
     } catch (e) {
       if (!context.mounted) return;
-
-      scaffoldMessenger.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao fazer login: ${e.toString()}')),
       );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    if (_isLoading) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final authService = ref.read(authServiceProvider);
+      final UserCredential? userCredential =
+          await authService.signInWithApple();
+
+      if (!context.mounted) return;
+
+      if (userCredential != null) {
+        await _updateUserProfile();
+        context.go(AppRoutes.onboarding);
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao fazer login: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handlePhoneSignIn() async {
+    if (_isLoading) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final authService = ref.read(authServiceProvider);
+      _verificationId = await authService.verifyPhoneNumber(
+        phoneController.text,
+      );
+
+      if (!context.mounted) return;
+
+      // Aqui você pode abrir um dialog para o código SMS
+      // e chamar _handleSMSVerification com o código
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao verificar número: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handleSMSVerification(String smsCode) async {
+    if (_verificationId == null || _isLoading) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final authService = ref.read(authServiceProvider);
+      final userCredential = await authService.verifySMSCode(
+        smsCode: smsCode,
+        verificationId: _verificationId!,
+      );
+
+      if (!context.mounted) return;
+
+      if (userCredential != null) {
+        await _updateUserProfile();
+        context.go(AppRoutes.onboarding);
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao verificar código: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -65,7 +169,7 @@ class LoginPage extends StatelessWidget {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => _handlePhoneSignIn(),
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -92,7 +196,7 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   OutlinedButton(
-                    onPressed: () => _handleGoogleSignIn(context),
+                    onPressed: () => _handleGoogleSignIn(),
                     style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
@@ -108,7 +212,7 @@ class LoginPage extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () => _handleAppleSignIn(),
                     style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,

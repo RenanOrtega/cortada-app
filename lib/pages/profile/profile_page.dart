@@ -1,3 +1,4 @@
+import 'package:cortada_app/providers/api_provider.dart';
 import 'package:cortada_app/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,122 +14,67 @@ class ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
-
-    if (user == null) {
-      return const Scaffold(
-        body: Center(
-          child: Text('Usuário não encontrado'),
-        ),
-      );
-    }
+    final userProfileAsync = ref.watch(userProfileProvider);
+    final authMethodsAsync = ref.watch(authMethodsProvider);
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Perfil'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () async {
-                await ref.read(authServiceProvider).signOut();
-              },
-            ),
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: user.photoURL != null
-                      ? NetworkImage(user.photoURL!)
-                      : null,
-                  child: user.photoURL == null
-                      ? const Icon(Icons.person, size: 80)
-                      : null,
+      appBar: AppBar(title: const Text('Perfil')),
+      body: userProfileAsync.when(
+        data: (profile) => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Nome: ${profile['displayName'] ?? 'Não informado'}'),
+              Text('Email: ${profile['email'] ?? 'Não informado'}'),
+              Text('Telefone: ${profile['phoneNumber'] ?? 'Não informado'}'),
+              const SizedBox(height: 24),
+              authMethodsAsync.when(
+                data: (methods) => Column(
+                  children: methods
+                      .map((method) => ListTile(
+                            title: Text(_getMethodName(method)),
+                            leading: _getMethodIcon(method),
+                          ))
+                      .toList(),
                 ),
-                const SizedBox(height: 16),
-                if (user.displayName != null) ...[
-                  ListTile(
-                    leading: const Icon(Icons.person),
-                    title: const Text(
-                      'Nome',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(user.displayName!),
-                  ),
-                ],
-                if (user.email != null) ...[
-                  ListTile(
-                    leading: const Icon(Icons.email),
-                    title: const Text(
-                      'Email',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(user.email!),
-                  ),
-                ],
-                if (user.phoneNumber != null) ...[
-                  ListTile(
-                    leading: const Icon(Icons.phone),
-                    title: const Text(
-                      'Telefone',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(user.phoneNumber!),
-                  ),
-                ],
-                ListTile(
-                  leading: Icon(
-                    user.emailVerified ? Icons.verified : Icons.warning,
-                    color: user.emailVerified ? Colors.green : Colors.orange,
-                  ),
-                  title: const Text(
-                    'Status do Email',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(user.emailVerified
-                      ? 'Email verificado'
-                      : 'Email não verificado'),
-                  trailing: !user.emailVerified
-                      ? TextButton(
-                          onPressed: () async {
-                            try {
-                              await user.sendEmailVerification();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('Email de verificação enviado!'),
-                                ),
-                              );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Erro ao enviar email de verificação'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          },
-                          child: const Text('Verificar'),
-                        )
-                      : null,
-                ),
-                ListTile(
-                  leading: const Icon(Icons.calendar_today),
-                  title: const Text(
-                    'Conta criada em',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(user.metadata.creationTime?.toString() ??
-                      'Data desconhecida'),
-                ),
-              ],
-            ),
+                error: (error, stack) => Text('Erro: $error'),
+                loading: () => const CircularProgressIndicator(),
+              ),
+            ],
           ),
-        ));
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text('Erro ao carregar perfil: $error'),
+        ),
+      ),
+    );
+  }
+
+  String _getMethodName(String method) {
+    switch (method) {
+      case 'google.com':
+        return 'Google';
+      case 'apple.com':
+        return 'Apple';
+      case 'phone':
+        return 'Telefone';
+      default:
+        return method;
+    }
+  }
+
+  Icon _getMethodIcon(String method) {
+    switch (method) {
+      case 'google.com':
+        return const Icon(Icons.g_mobiledata);
+      case 'apple.com':
+        return const Icon(Icons.apple);
+      case 'phone':
+        return const Icon(Icons.phone);
+      default:
+        return const Icon(Icons.login);
+    }
   }
 }
