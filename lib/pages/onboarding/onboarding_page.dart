@@ -157,7 +157,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     curve: Curves.easeInOut,
                   );
                 } else {
-                  context.go(AppRoutes.profile);
+                  context.go(AppRoutes.home);
                 }
               },
               style: TextButton.styleFrom(backgroundColor: Colors.black),

@@ -4,4 +4,6 @@ class AppRoutes {
   static const settings = '/settings';
   static const splash = '/splash';
   static const onboarding = '/onboarding';
+  static const createMatch = '/create_match';
+  static const home = '/home';
 }

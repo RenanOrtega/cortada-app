@@ -17,6 +17,7 @@ dependencies:
   go_router: ^14.8.0
   google_fonts: ^6.2.1
   google_sign_in: ^6.2.2
+  intl: ^0.20.2
   shared_preferences: ^2.5.2
   sign_in_with_apple: ^6.1.4
 
@@ -32,3 +33,4 @@ flutter:
     - assets/images/onboarding.png
     - assets/images/logo.png
     - assets/images/google_icon.png
+    - assets/images/volleyball_court.jpg

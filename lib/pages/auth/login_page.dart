@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   ConsumerState<LoginPage> createState() => _LoginPageState();
@@ -24,9 +24,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       await apiService.updateUserProfile();
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao atualizar perfil: ${e.toString()}')),
-      );
+      _showErrorSnackBar('Erro ao atualizar perfil: ${e.toString()}');
     }
   }
 
@@ -43,17 +41,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (!context.mounted) return;
 
       if (userCredential != null) {
-        await _updateUserProfile();
+        // await _updateUserProfile();
         context.go(AppRoutes.onboarding);
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao fazer login: ${e.toString()}')),
-      );
+      _showErrorSnackBar('Erro ao fazer login: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade800,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
   }
 
   Future<void> _handleAppleSignIn() async {
@@ -74,9 +84,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao fazer login: ${e.toString()}')),
-      );
+      _showErrorSnackBar('Erro ao fazer login: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -99,9 +107,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // e chamar _handleSMSVerification com o código
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao verificar número: ${e.toString()}')),
-      );
+      _showErrorSnackBar('Erro ao verificar número: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -127,9 +133,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao verificar código: ${e.toString()}')),
-      );
+      _showErrorSnackBar('Erro ao verificar código: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
     }

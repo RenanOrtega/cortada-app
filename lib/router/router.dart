@@ -1,4 +1,6 @@
 import 'package:cortada_app/pages/auth/login_page.dart';
+import 'package:cortada_app/pages/home/home_page.dart';
+import 'package:cortada_app/pages/match/create_match_page.dart';
 import 'package:cortada_app/pages/onboarding/onboarding_page.dart';
 import 'package:cortada_app/pages/profile/profile_page.dart';
 import 'package:cortada_app/pages/splash/splash_page.dart';
@@ -19,34 +21,44 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (authState.isLoading) return AppRoutes.splash;
 
       final isAuth = authState.valueOrNull != null;
-
       final isGoingToLogin = state.uri.toString() == AppRoutes.login;
 
-      if (!isAuth && !isGoingToLogin) return AppRoutes.login;
+      final isProtectedRoute = state.uri.toString() == AppRoutes.profile ||
+          state.uri.toString() == AppRoutes.createMatch ||
+          false;
 
+      if (!isAuth && !isGoingToLogin) return AppRoutes.login;
       if (isAuth && isGoingToLogin) return AppRoutes.onboarding;
 
-      if (isAuth && !isGoingToLogin) return AppRoutes.profile;
+      if (isAuth && !isGoingToLogin && !isProtectedRoute) return null;
 
       return null;
     },
     initialLocation: AppRoutes.splash,
     routes: [
       GoRoute(
-        path: '/onboarding',
+        path: AppRoutes.onboarding,
         builder: (context, state) => const OnboardingPage(),
       ),
       GoRoute(
-        path: '/login',
-        builder: (context, state) => LoginPage(),
+        path: AppRoutes.login,
+        builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
-        path: '/profile',
-        builder: (context, state) => ProfilePage(),
+        path: AppRoutes.profile,
+        builder: (context, state) => const ProfilePage(),
       ),
       GoRoute(
-        path: '/splash',
-        builder: (context, state) => SplashPage(),
+        path: AppRoutes.splash,
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.home,
+        builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: AppRoutes.createMatch,
+        builder: (context, state) => const CreateMatchPage(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
