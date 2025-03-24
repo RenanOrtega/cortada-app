@@ -112,7 +112,7 @@ class ProfilePage extends ConsumerWidget {
                             _buildStatItem('MVP', '3', Icons.emoji_events),
                             _buildStatItem('Aces', '15', Icons.bolt),
                             _buildStatItem('Bloqueios', '32', Icons.back_hand),
-                            _buildStatItem('Cortadas', '67', Icons.flash_on),
+                            _buildStatItem('Ataques', '67', Icons.flash_on),
                           ],
                         ),
                       ],

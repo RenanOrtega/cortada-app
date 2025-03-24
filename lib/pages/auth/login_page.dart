@@ -21,7 +21,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Future<void> _updateUserProfile() async {
     try {
       final apiService = ref.read(apiServiceProvider);
-      await apiService.updateUserProfile();
+      // await apiService.updateUserProfile();
     } catch (e) {
       if (!context.mounted) return;
       _showErrorSnackBar('Erro ao atualizar perfil: ${e.toString()}');
